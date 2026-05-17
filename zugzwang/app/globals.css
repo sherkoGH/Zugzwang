@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: #1c1a17;
+  color: #f1f1f1;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(129, 182, 76, 0.35);
+  color: #f1f1f1;
+}
+
+/* Scrollbar — discreet, on-brand */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #302e2b;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #454340;
+}
+
+/* Subtle dotted background for hero panels */
+.bg-grid-soft {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
