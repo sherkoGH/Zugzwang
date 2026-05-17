@@ -1,114 +1,114 @@
 # Zugzwang ♟️
 
-Premium full-stack Checkers platform — three rule sets (American, Russian/Шашки, Giveaway/Поддавки), 6 AI bots with alpha-beta pruning, daily puzzles, Elo graph, city leaderboard, and Supabase auth wired in.
+Zugzwang is a premium, full-stack Checkers platform designed with the competitive infrastructure and aesthetic polish expected of modern chess platforms. It features multiple rule variants, advanced AI personalities, realtime multiplayer, post-match analysis, and a structured progression system wrapped in a dark, obsidian-themed UI.
 
-Inspired by Chess.com's layout, Lichess's mechanical depth, and built in Next.js 14 + TypeScript strict mode.
+Personal note: Zugzwang was built with heart for N!'s test task. However, when I was working on it, bugs kept adding up, and eventually my low-end laptop couldn't handle the workload. I crashed out and let go of my dream as I was busy with so much stuff lately. I wasted my whole day, and had exams coming up. The next day, though, I just could not let myself give up like that. So, I restarted everything all over again and the current project is what I ended up making while having just some hours left until the deadline. Respect for whoever read this long text.
+
+Built with **Next.js 14 (App Router)**, **TypeScript (Strict Mode)**, **Zustand**, **Supabase**, and **Stripe**.
 
 ---
 
-## Quick start (GitHub Codespaces)
+## 🚀 Features
 
+### 🎮 Gameplay & Engine
+*   **Three Rule Variants:** 
+    *   *American:* Standard forward jumps, short kings, mandatory captures.
+    *   *Russian (Шашки):* Backward jumps for men, flying kings, and mid-jump promotion.
+    *   *Giveaway (Поддавки):* Anti-checkers variant where the goal is to lose all pieces.
+*   **Sandbox Mode:** Complete position editor to place any piece on any valid square for analysis or testing.
+*   **Robust Move Mechanics:** Full Depth-First Search (DFS) expansion for complex multi-jump capture chains.
+*   **Procedural Audio:** Sound effects (moves, captures, promotions) synthesized dynamically via the HTML5 AudioContext API—zero heavy asset files required.
+*   **Dual Clocks:** Supports Bullet, Blitz, Rapid, and Untimed controls with custom time increments.
+
+### 🤖 Opponents & Multiplayer
+*   **6 AI Personalities:** Engine powered by Negamax with Alpha-Beta pruning, ranging from 700 to 2200 Elo. Each persona utilizes distinct search depths, aggression weights, and intentional error rates.
+*   **Realtime Multiplayer:** Instant match creation with 6-character room codes powered by Supabase broadcast channels. 
+*   **Client-Side Validation:** The receiving client re-validates all network move payloads against the local engine to ensure zero state corruption.
+
+### 📈 Progression & Analysis (Pro)
+*   **Detailed Analytics:** Post-match Coach Review labels moves with Chess.com-style glyphs (`!!`, `!`, `?!`, `?`, `??`) based on centipawn loss metrics.
+*   **Player Profiles:** Per-category Elo ratings, a custom SVG-rendered 30-day Elo history chart, and regional leaderboards (Almaty, Astana, Taraz, Shymkent, Karaganda).
+*   **Daily Challenges:** Three tactics puzzles and one master puzzle generated daily with streak tracking.
+*   **Monetization Tier:** Integrated Stripe Checkout webhook architecture to toggle premium features (`is_pro = true`) alongside animated paywall modals.
+
+---
+
+<img width="1365" height="538" alt="image" src="https://github.com/user-attachments/assets/97da9e12-1876-4edd-8796-5bb1bb9f4ca0" />
+
+---
+## 🛠️ Tech Stack
+
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Framework** | Next.js 14 (App Router) | Server Components for speed, Client Components for interactive UI, API routes for webhooks. |
+| **Language** | TypeScript (Strict) | Fully typed game state, engine, and store using discriminated unions. |
+| **State** | Zustand + Persist | Lightweight global state with LocalStorage hydration to survive page refreshes. |
+| **Database/Backend** | Supabase | Postgres storage, Row-Level Security (RLS), and Realtime broadcast channels. |
+| **Payments** | Stripe | Customer checkout sessions and secure webhook handling for the Pro tier. |
+| **Styling** | Tailwind CSS | Custom obsidian/earth design tokens configured via `tailwind.config.ts`. |
+
+---
+
+## 📁 Project Structure
+
+```text
+zugzwang/
+├── app/                          # Next.js App Router (Pages & API Routes)
+│   ├── api/webhook/stripe/       # Stripe payment lifecycle handler
+│   ├── leaderboard/              # City-filtered rankings
+│   ├── play/                     # Game interfaces (Single-player, Live Lobby, Rooms)
+│   ├── profile/                  # User stats, SVG Elo graphs, and achievements
+│   └── puzzles/                  # Daily tactics panel
+├── components/
+│   ├── game/                     # Board renderer, Sandbox editor, Game panel controls
+│   ├── layout/                   # Persistent Navigation, Sidebar, and TopBar
+│   └── ui/                       # Reusable design elements (Glow buttons, Paywall modals)
+├── lib/
+│   ├── analyzer.ts               # Post-match move quality analyzer
+│   ├── engine.ts                 # Pure-function rules engine + alpha-beta bot
+│   ├── pdn.ts                    # Portable Draughts Notation (PDN) parser/encoder
+│   ├── realtime.ts               # Supabase channel connection wrappers
+│   └── sfx.ts                    # AudioContext synthesis engine
+├── store/
+│   ├── useGameStore.ts           # Match state, clocks, history, and bot state
+│   └── useAuthStore.ts           # User profiles, streaks, and puzzle state
+└── supabase/
+    └── schema.sql                # Database migrations, RLS policies, and triggers
+
+    ## ⚙️ Core Architecture Decisions
+
+*   **Pure-Function Game Engine:** Logic in `lib/engine.ts` has zero side effects or React dependencies. The exact same rule validation matrices are shared by the local UI, the bot, the post-match analyzer, and the multiplayer network layer.
+*   **Broadcast-Only Realtime Layer:** Multiplayer rooms pass minimal, primitive move payloads (`{ from, to, path }`) over Supabase channels rather than writing every ply to a database table. The board state is completely reconstructed on the fly, saving heavy Postgres database read/write loads.
+*   **Offline Fallback Mode:** If environment variables for Supabase or Stripe are missing, the application seamlessly defaults to a local offline sandbox/pass-and-play mode with mocked authentication and local storage state updates.
+
+---
+
+## ⚡ Quick Start
+
+### 1. Clone and Install
 ```bash
-# 1. Install dependencies
+git clone [https://github.com/yourusername/zugzwang.git](https://github.com/yourusername/zugzwang.git)
+cd zugzwang
 npm install
 
-# 2. Copy env template and fill in your Supabase keys
-cp .env.local.example .env.local
-# Edit .env.local — paste your Supabase URL + anon key
+2. Configure Environment VariablesCreate a .env.local file in the root directory:BashNEXT_PUBLIC_SUPABASE_URL=[https://your-project.supabase.co](https://your-project.supabase.co)
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 
-# 3. Run the dev server
-npm run dev
-```
+# Optional: Required for live payments
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 
-Open <http://localhost:3000> (Codespaces will forward the port automatically).
+3. Setup the DatabasePaste the contents of supabase/schema.sql into your Supabase SQL Editor and run it. Ensure Realtime is toggled on for the rooms table in your Supabase Dashboard (Database -> Replication). 
 
-> **Works offline too.** If you skip Supabase setup, the app falls back to LocalStorage — sign-in is mocked locally, game progress and stats still persist. You only need Supabase if you want real auth and multiplayer.
+4. Run the Development ServerBashnpm run dev
+Open http://localhost:3000 to view the platform.  
 
----
+🛠️ Available Scripts:
+npm run dev - Launches the local development server with hot-reloading.  
+npm run build - Compiles the production build configuration. 
+npm run start - Bootstraps the built production server locally.
+npm run lint - Runs strict ESLint checks.
+npm run typecheck - Validates strict type checking across the project without emitting files.
 
-## Supabase setup (optional, for full Level 3/4 functionality)
-
-1. Create a project at <https://supabase.com>.
-2. Open **SQL Editor** → paste the entire contents of `supabase/schema.sql` → **Run**. This creates:
-   - `profiles`, `matches`, `user_badges`, `puzzle_attempts`, `rooms` tables
-   - RLS policies (public reads where appropriate, owner-only writes)
-   - A `handle_new_user()` trigger that auto-creates a profile row on signup
-3. In **Project Settings → API**, copy the **Project URL** and **anon public key** into `.env.local`:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-   ```
-4. (For multiplayer / Level 4) In **Database → Replication**, enable **Realtime** for the `rooms` table.
-
----
-
-## Project structure
-
-```
-app/
-  layout.tsx          — Root shell: sidebar + topbar + main slot
-  page.tsx            — Dashboard (hero, mode cards, puzzles row)
-  play/page.tsx       — Game surface (board + side panel)
-  puzzles/page.tsx    — Daily tactics + master puzzle
-  profile/page.tsx    — Stats, Elo graph (custom SVG), badges, Upgrade-to-Pro
-  leaderboard/page.tsx — City-filtered ranking (Almaty/Astana/Taraz/+)
-  login/page.tsx      — Sign in / sign up (Supabase or offline)
-  globals.css
-components/
-  layout/Sidebar.tsx  — Persistent left nav with Upgrade-to-Pro CTA
-  layout/TopBar.tsx   — Sticky header, mobile drawer, user widget
-  game/CheckersBoard.tsx — 8×8 board renderer w/ hints, last-move ring
-  game/GamePanel.tsx  — Full play surface: clocks, status, move history,
-                        variant/bot pickers, undo/resign
-lib/
-  engine.ts           — Pure rules engine (all 4 variants + alpha-beta bot)
-  supabase.ts         — Lazy client init, returns null if env not set
-store/
-  useGameStore.ts     — Zustand: board, clock, history, bot tick, persist
-  useAuthStore.ts     — Zustand: user, stats, badges, Elo history,
-                        leaderboard seed, puzzle data
-types/
-  game.ts             — Strict types: Board, Piece, Move, Variant, …
-supabase/
-  schema.sql          — Migration with RLS, triggers, indexes
-```
-
----
-
-## How the game engine handles variants
-
-| Rule set         | Men jump back? | Flying kings? | Promote mid-jump? | Win condition       |
-|------------------|----------------|---------------|--------------------|---------------------|
-| American         | ❌ no           | ❌ no (short)  | Stops chain        | Capture / trap foe  |
-| Russian (Шашки)  | ✅ yes          | ✅ yes         | ✅ becomes flying  | Capture / trap foe  |
-| Giveaway (Поддавки) | ✅ yes      | ✅ yes         | ✅                 | **Lose** all = win  |
-| Sandbox          | (no validation — move pieces freely for debugging)               |
-
-Mandatory captures are enforced in American / Russian / Giveaway. Multi-jump chains are computed via recursive DFS (`exploreCaptureChain`).
-
-The bot uses **negamax with alpha-beta pruning**. Each persona has its own `(depth, aggression, errorRate)` triple — see `BOT_PERSONAS` in `store/useGameStore.ts`.
-
----
-
-## Commands
-
-```bash
-npm run dev        # Dev server (hot reload)
-npm run build      # Production build
-npm run start      # Production server
-npm run lint       # ESLint
-npm run typecheck  # tsc --noEmit
-```
-
----
-
-## What's covered from the spec
-
-- **Level 1 (Слабый):** Sandbox mode, static 8×8 board, free movement
-- **Level 2 (Средний):** Full rule engine for American / Russian / Giveaway, mandatory captures, king promotion, win detection, local 2-player on one screen, LocalStorage persistence
-- **Level 3 (Сильный):** 6-tier AI opponent (700–2200 Elo), Supabase auth + profile sync, dark theme, move hints, fully responsive mobile layout
-- **Level 4 (Великий):** Realtime room schema for multiplayer (Supabase channels), city leaderboard (Almaty / Astana / Taraz / Shymkent / Karaganda), Upgrade-to-Pro CTA, daily puzzle structure, Elo graph, achievement badges
-
----
-
-Built for Codespaces deploy. Just `npm install && npm run dev`.
+📜 License & Acknowledgments
+This project is licensed under the MIT License. Built with care in 🇰🇿 Kazakhstan.
