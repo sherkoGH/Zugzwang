@@ -33,6 +33,9 @@ Built with **Next.js 14 (App Router)**, **TypeScript (Strict Mode)**, **Zustand*
 
 ---
 
+<img width="1365" height="538" alt="image" src="https://github.com/user-attachments/assets/97da9e12-1876-4edd-8796-5bb1bb9f4ca0" />
+
+---
 ## 🛠️ Tech Stack
 
 | Layer | Technology | Purpose |
@@ -106,4 +109,6 @@ npm run build - Compiles the production build configuration.
 npm run start - Bootstraps the built production server locally.
 npm run lint - Runs strict ESLint checks.
 npm run typecheck - Validates strict type checking across the project without emitting files.
-📜 License & AcknowledgmentsThis project is licensed under the MIT License. Built with care in 🇰🇿 Kazakhstan.
+
+📜 License & Acknowledgments
+This project is licensed under the MIT License. Built with care in 🇰🇿 Kazakhstan.
