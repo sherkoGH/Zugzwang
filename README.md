@@ -94,7 +94,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 # Optional: Required for live payments
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
-3. Setup the DatabasePaste the contents of supabase/schema.sql into your Supabase SQL Editor and run it. Ensure Realtime is toggled on for the rooms table in your Supabase Dashboard (Database -> Replication).  4. Run the Development ServerBashnpm run dev
+
+3. Setup the DatabasePaste the contents of supabase/schema.sql into your Supabase SQL Editor and run it. Ensure Realtime is toggled on for the rooms table in your Supabase Dashboard (Database -> Replication). 
+
+4. Run the Development ServerBashnpm run dev
 Open http://localhost:3000 to view the platform.  
 
 🛠️ Available Scripts:
