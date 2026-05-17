@@ -28,39 +28,29 @@ export async function POST(req: Request) {
     );
   }
 
-  // ─── Live implementation (uncomment when stripe is installed) ───
-  //
-  // import Stripe from "stripe";
-  // const stripe = new Stripe(stripeKey);
-  // const sig = req.headers.get("stripe-signature");
-  // if (!sig) return NextResponse.json({ error: "Missing signature" }, { status: 400 });
-  //
-  // const rawBody = await req.text();
-  // let event: Stripe.Event;
-  // try {
-  //   event = stripe.webhooks.constructEvent(rawBody, sig, secret);
-  // } catch (err) {
-  //   return NextResponse.json({ error: `Webhook verification failed: ${err}` }, { status: 400 });
-  // }
-  //
-  // if (event.type === "checkout.session.completed") {
-  //   const session = event.data.object as Stripe.Checkout.Session;
-  //   const userId = session.metadata?.user_id;
-  //   if (userId) {
-  //     const sb = getSupabase();
-  //     if (sb) {
-  //       await sb.from("profiles").update({ is_pro: true }).eq("id", userId);
-  //     }
-  //   }
-  // }
-  // return NextResponse.json({ received: true });
-
-  // ─── Stub (current) ───
-  // Read body so we don't hold the connection open, but otherwise no-op.
-  await req.text().catch(() => "");
-  void getSupabase;
-  return NextResponse.json({
-    received: true,
-    note: "Stripe webhook stub — see app/api/webhook/stripe/route.ts to enable.",
-  });
+//─── Live implementation (uncomment when stripe is installed) ───
+  
+import Stripe from "stripe";
+const stripe = new Stripe(stripeKey);
+const sig = req.headers.get("stripe-signature");
+if (!sig) return NextResponse.json({ error: "Missing signature" }, { status: 400 });
+  
+const rawBody = await req.text();
+let event: Stripe.Event;
+try {
+  event = stripe.webhooks.constructEvent(rawBody, sig, secret);
+} catch (err) {
+  return NextResponse.json({ error: `Webhook verification failed: ${err}` }, { status: 400 });
 }
+  
+if (event.type === "checkout.session.completed") {
+  const session = event.data.object as Stripe.Checkout.Session;
+  const userId = session.metadata?.user_id;
+  if (userId) {
+    const sb = getSupabase();
+    if (sb) {
+      await sb.from("profiles").update({ is_pro: true }).eq("id", userId);
+    }
+  }
+}
+return NextResponse.json({ received: true });
